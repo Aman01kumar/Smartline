@@ -9,30 +9,29 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS Configuration
+// ✅ Allowed Origins
 const allowedOrigins = [
   'https://smartline-frontend.netlify.app',
-  'https://smartline-ui.netlify.app',  // ✅ Add this!
+  'https://smartline-ui.netlify.app',
   'http://localhost:3000'
 ];
 
+// ✅ Preflight for all routes MUST come first
+app.options('*', cors());
 
+// ✅ CORS Configuration
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = '❌ The CORS policy does not allow access from this origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('❌ Not allowed by CORS'), false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
-app.options('*', cors()); // ✅ Enable preflight for all routes
+// ✅ Parse incoming JSON
 app.use(express.json());
 
 // ✅ Create HTTP server
@@ -48,7 +47,7 @@ const io = new Server(server, {
   path: '/socket.io',
 });
 
-// ✅ MongoDB Connection
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -64,7 +63,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tokens', require('./routes/tokenRoutes'));
 app.use('/api/queue', require('./routes/queueRoutes'));
 
-// ✅ Socket.IO Logic
+// ✅ Socket.IO Events
 io.on('connection', (socket) => {
   console.log('🟢 Socket connected:', socket.id);
 
@@ -85,7 +84,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// ✅ Error Handler
+// ✅ Global Error Handler
 app.use((err, req, res, next) => {
   console.error('❌ Global error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
