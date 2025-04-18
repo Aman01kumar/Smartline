@@ -1,4 +1,3 @@
-// client/src/pages/AdminDashboard.js
 import React, { useEffect, useState } from 'react';
 import socket from '../socket';
 
@@ -34,38 +33,36 @@ function AdminDashboard({ user }) {
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: 'auto', fontFamily: 'Arial, sans-serif' }}>
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🛠️ Admin Dashboard</h2>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start py-10 px-4">
+      <div className="w-full max-w-xl bg-white p-6 rounded-2xl shadow-xl">
+        <h2 className="text-2xl font-bold mb-4">🛠️ Admin Dashboard</h2>
 
-      <button
-        onClick={handleCallNext}
-        style={{
-          padding: '0.5rem 1.5rem',
-          backgroundColor: '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          fontSize: '1rem'
-        }}
-      >
-        📞 Call Next
-      </button>
+        <button
+          onClick={handleCallNext}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all"
+        >
+          📞 Call Next
+        </button>
 
-      {message && (
-        <div style={{ marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '5px' }}>
-          {message}
-        </div>
-      )}
+        {message && (
+          <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-md font-medium">
+            {message}
+          </div>
+        )}
 
-      <h3 style={{ marginTop: '2rem' }}>📋 Current Queue</h3>
-      <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-        {queue.map((user, index) => (
-          <li key={user.id} style={{ padding: '0.5rem 0', borderBottom: '1px solid #ccc' }}>
-            <strong>{index + 1}.</strong> {user.email}
-          </li>
-        ))}
-      </ul>
+        <h3 className="text-xl font-semibold mt-8 mb-3">📋 Current Queue</h3>
+        {queue.length === 0 ? (
+          <p className="text-gray-500 italic">No users in the queue.</p>
+        ) : (
+          <ul className="divide-y divide-gray-300">
+            {queue.map((user, index) => (
+              <li key={user.id} className="py-2">
+                <strong>{index + 1}.</strong> {user.email}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,14 +1,13 @@
-// client/src/socket.js
 import { io } from 'socket.io-client';
 
-// Remove '/api' if present in the env URL
 const baseUrl = (process.env.REACT_APP_API_URL || 'http://localhost:10000').replace(/\/api$/, '');
 
 const socket = io(baseUrl, {
   path: '/socket.io',
   transports: ['websocket'],
   withCredentials: true,
-  reconnectionAttempts: 5,
+  reconnection: true,
+  reconnectionAttempts: 10,
   reconnectionDelay: 1000,
   timeout: 10000,
   autoConnect: true,
@@ -24,10 +23,6 @@ socket.on('connect_error', (err) => {
 
 socket.on('disconnect', (reason) => {
   console.warn('⚠️ [Socket] Disconnected:', reason);
-});
-
-socket.on('reconnect_attempt', (attempt) => {
-  console.info(`🔁 [Socket] Reconnection attempt #${attempt}`);
 });
 
 export default socket;

@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -19,6 +21,9 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/test-queue" element={<QueueTest />} />
       </Routes>
+
+      {/* ✅ Toast container for global notifications */}
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
     </Router>
   );
 }

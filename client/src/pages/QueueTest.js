@@ -28,24 +28,35 @@ const QueueTest = () => {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-2">📋 Queue Test Page</h2>
+    <div className="p-4 max-w-xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">📋 Queue Test Page</h2>
+
       <button
         onClick={fetchQueue}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        disabled={loading}
+        className={`px-4 py-2 rounded text-white transition ${
+          loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+        }`}
       >
-        Load Queue
+        {loading ? 'Loading...' : 'Load Queue'}
       </button>
 
-      {loading && <p className="mt-4 text-gray-600">Loading queue...</p>}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
+      {error && <p className="mt-4 text-red-600">{error}</p>}
 
-      <ul className="mt-4">
-        {queue.map((user, index) => (
-          <li key={index} className="border p-2 mb-2 rounded bg-gray-100">
-            {user.name || user.email || `User ${index + 1}`}
-          </li>
-        ))}
+      <ul className="mt-6 space-y-2">
+        {queue.length > 0 ? (
+          queue.map((user, index) => (
+            <li
+              key={index}
+              className="border p-3 rounded bg-gray-100 shadow-sm flex items-center"
+            >
+              👤 {user.name || user.email || `User ${index + 1}`}
+            </li>
+          ))
+        ) : (
+          !loading &&
+          !error && <p className="text-gray-500 mt-4">No one in the queue yet.</p>
+        )}
       </ul>
     </div>
   );

@@ -69,36 +69,48 @@ let queue = [];
 // ✅ Socket.IO Events
 io.on('connection', (socket) => {
   console.log('🟢 Socket connected:', socket.id);
-
   socket.emit('welcome', 'Connected to SmartLine live queue');
 
   // User joins queue
-  socket.on('joinQueue', (data) => {
-    if (!queue.find(u => u.id === data.id)) {
-      queue.push(data);
-      console.log(`➕ ${data.email} added to queue`);
+  socket.on('joinQueue', (user) => {
+    const alreadyInQueue = queue.find(u => u.id === user.id);
+    if (!alreadyInQueue) {
+      queue.push(user);
+      console.log(`➕ ${user.email} added to queue`);
       io.emit('queueUpdated', { queue });
     } else {
-      console.log(`⚠️ ${data.email} already in queue`);
+      console.log(`⚠️ ${user.email} already in queue`);
     }
   });
 
-  // Admin requests full queue on join
+  // Admin joins to get full queue
   socket.on('adminJoin', () => {
     console.log('🛠️ Admin joined');
     socket.emit('queueUpdated', { queue });
   });
 
-  // Admin calls next user
+  // Admin calls the next user
   socket.on('callNext', () => {
     if (queue.length > 0) {
       const nextUser = queue.shift();
       console.log(`📞 Calling: ${nextUser.email}`);
       io.emit('queueUpdated', { queue });
+      io.emit('userCalled', nextUser); // ✅ Notify specific user
       io.emit('message', `📣 ${nextUser.email} has been called!`);
     } else {
       console.log('🚫 No users in queue');
       socket.emit('message', 'Queue is empty.');
+    }
+  });
+
+  // User leaves the queue
+  socket.on('leaveQueue', (userId) => {
+    const before = queue.length;
+    queue = queue.filter(u => u.id !== userId);
+    const after = queue.length;
+    if (before !== after) {
+      console.log(`❌ User with ID ${userId} left the queue`);
+      io.emit('queueUpdated', { queue });
     }
   });
 
