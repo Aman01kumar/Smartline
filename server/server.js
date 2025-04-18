@@ -6,25 +6,35 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 
 dotenv.config();
-
 const app = express();
 
-// ✅ Allowed Origins
+// ✅ Regex-safe allowed origins including dynamic Netlify previews
 const allowedOrigins = [
-  'https://smartline-frontend.netlify.app',
-  'https://smartline-ui.netlify.app',
+  /^https:\/\/.*netlify\.app$/,      // Allow all netlify preview domains
   'http://localhost:3000'
 ];
 
-// ✅ Preflight for all routes MUST come first
+// ✅ CORS Preflight handler (must come before route handlers)
 app.options('*', cors());
 
-// ✅ CORS Configuration
+// ✅ CORS middleware with origin logging
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error('❌ Not allowed by CORS'), false);
+    console.log('🔍 Incoming request origin:', origin); // Debugging CORS
+    if (!origin) return callback(null, true); // Allow mobile/postman/etc
+
+    const isAllowed = allowedOrigins.some((o) => {
+      if (typeof o === 'string') return o === origin;
+      if (o instanceof RegExp) return o.test(origin);
+      return false;
+    });
+
+    if (isAllowed) {
+      return callback(null, true);
+    } else {
+      console.warn('❌ Blocked by CORS:', origin);
+      return callback(new Error('Not allowed by CORS'), false);
+    }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
