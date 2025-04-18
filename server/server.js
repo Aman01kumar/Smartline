@@ -36,9 +36,11 @@ mongoose.connect(process.env.MONGODB_URI)
 // ✅ Routes
 const userRoutes = require('./routes/userRoutes');
 const tokenRoutes = require('./routes/tokenRoutes');
+const queueRoutes = require('./routes/queueRoutes'); // 👈 Add this line
 
 app.use('/api/users', userRoutes);
 app.use('/api/tokens', tokenRoutes);
+app.use('/api/queue', queueRoutes); // 👈 Add this line
 
 // ✅ Socket.IO Logic
 io.on('connection', (socket) => {
