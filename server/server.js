@@ -1,37 +1,63 @@
+// server.js
 const express = require('express');
-const cors = require('cors');
+const http = require('http'); // For socket server
+const { Server } = require('socket.io'); // Socket.IO
+const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const http = require('http');
-const socketIo = require('socket.io');
-const connectDB = require('../db'); // Adjust the path if needed
+const cors = require('cors');
+
+const userRoutes = require('./routes/userRoutes');
+const tokenRoutes = require('./routes/tokenRoutes');
+
 
 dotenv.config();
-connectDB(); // ✅ MongoDB connected
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
+const server = http.createServer(app); // Create HTTP server
+const io = new Server(server, {
   cors: {
     origin: '*',
+    methods: ['GET', 'POST']
   }
 });
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/tokens', require('./routes/tokenRoutes'));
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/tokens', tokenRoutes);
 
-// WebSocket logic
+// MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.log('❌ MongoDB error:', err));
+  
+// --- Socket.IO logic ---
 io.on('connection', (socket) => {
-  console.log('⚡ New client connected');
+  console.log('🟢 User connected:', socket.id);
+
+  // Example: emit welcome message
+  socket.emit('welcome', 'Connected to SmartLine live queue');
+
+  // Custom event handlers
+  socket.on('joinQueue', (data) => {
+    console.log('User joined queue:', data);
+    io.emit('queueUpdated', data); // Notify all users
+  });
+
+  socket.on('callNextUser', (data) => {
+    console.log('Next user called:', data);
+    io.emit('userCalled', data); // Notify all users
+  });
 
   socket.on('disconnect', () => {
-    console.log('🚪 Client disconnected');
+    console.log('🔴 User disconnected:', socket.id);
   });
 });
 
-app.set('socketio', io);
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// Start server
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

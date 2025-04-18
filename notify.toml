@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "client/build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://smartline-backend.onrender.com/api/:splat"
+  status = 200
+  force = true

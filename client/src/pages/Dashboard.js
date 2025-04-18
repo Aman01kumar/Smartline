@@ -1,32 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-const socket = io('http://localhost:5000');
+import socket from '../socket';
 
-function Dashboard() {
-  const [tokens, setTokens] = useState([]);
+function UserDashboard() {
+  const [user, setUser] = useState(null);
+  const [queueMessage, setQueueMessage] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/tokens')
-      .then(res => res.json())
-      .then(data => setTokens(data));
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-    socket.on('new_token', token => {
-      setTokens(prev => [...prev, token]);
+        const data = await res.json();
+
+        if (res.ok) {
+          setUser(data);
+          socket.emit('joinQueue', { email: data.email, id: data._id }); // ✅ Join the queue
+        } else {
+          alert(data.message || 'Failed to fetch user info');
+        }
+      } catch (err) {
+        console.error('Error fetching user:', err);
+        alert('Server error');
+      }
+    };
+
+    fetchUserInfo();
+
+    // ✅ Handle live queue updates from server
+    socket.on('queueUpdated', (info) => {
+      setQueueMessage(`Queue updated: ${info.email} joined`);
     });
 
-    return () => socket.disconnect();
+    return () => {
+      socket.off('queueUpdated');
+    };
   }, []);
+
+  if (!user) return <p>Loading user data...</p>;
 
   return (
     <div>
-      <h2>Live Queue</h2>
-      <ul>
-        {tokens.map((token, idx) => (
-          <li key={idx}>{token.priority} - {token.status}</li>
-        ))}
-      </ul>
+      <h2>Welcome, {user.email}</h2>
+      <p>Your ID: {user._id}</p>
+      {queueMessage && <p>{queueMessage}</p>}
     </div>
   );
 }
 
-export default Dashboard;
+export default UserDashboard;

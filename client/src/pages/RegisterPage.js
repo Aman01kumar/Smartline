@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user');
+  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ function RegisterPage() {
       const data = await res.json();
       if (res.ok) {
         alert('Registered successfully!');
+        navigate('/login');
       } else {
         alert(data.message || 'Registration failed');
       }
@@ -30,12 +33,12 @@ function RegisterPage() {
     <div>
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required /><br/>
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required /><br/>
         <select value={role} onChange={(e) => setRole(e.target.value)}>
           <option value="user">User</option>
           <option value="admin">Admin</option>
-        </select>
+        </select><br/>
         <button type="submit">Register</button>
       </form>
     </div>
