@@ -1,92 +1,71 @@
+// client/src/pages/AdminDashboard.js
 import React, { useEffect, useState } from 'react';
 import socket from '../socket';
 
-function AdminDashboard() {
-  const [users, setUsers] = useState([]);
+function AdminDashboard({ user }) {
   const [queue, setQueue] = useState([]);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
+    socket.emit('adminJoin');
 
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(`${apiUrl}/users`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-          setUsers(data);
-        } else {
-          console.error('Failed to fetch users:', data.message);
-          alert('Unauthorized or failed to fetch users.');
-        }
-      } catch (err) {
-        console.error('Server error:', err);
-        alert('Server error while fetching users.');
-      }
+    const handleQueueUpdate = (data) => {
+      console.log('📥 Queue updated:', data.queue);
+      setQueue(data.queue);
     };
 
-    fetchUsers();
+    const handleMessage = (msg) => {
+      console.log('📢 Message:', msg);
+      setMessage(msg);
+      setTimeout(() => setMessage(''), 4000);
+    };
 
-    socket.on('queueUpdated', (newEntry) => {
-      console.log('📥 Queue updated:', newEntry);
-      setQueue((prev) => [...prev, newEntry]);
-    });
-
-    socket.on('userCalled', (user) => {
-      console.log('📤 Calling next user:', user);
-      alert(`📞 Calling: ${user.email || 'Unknown User'}`);
-    });
+    socket.on('queueUpdated', handleQueueUpdate);
+    socket.on('message', handleMessage);
 
     return () => {
-      socket.off('queueUpdated');
-      socket.off('userCalled');
+      socket.off('queueUpdated', handleQueueUpdate);
+      socket.off('message', handleMessage);
     };
   }, []);
 
-  const callNextUser = () => {
-    if (queue.length === 0) {
-      alert('⚠️ Queue is empty.');
-      return;
-    }
-
-    const [nextUser, ...restQueue] = queue;
-    socket.emit('callNextUser', nextUser);
-    setQueue(restQueue);
+  const handleCallNext = () => {
+    socket.emit('callNext');
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>👨‍💼 Admin Dashboard</h2>
+    <div style={{ padding: '2rem', maxWidth: '600px', margin: 'auto', fontFamily: 'Arial, sans-serif' }}>
+      <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>🛠️ Admin Dashboard</h2>
 
       <button
-        onClick={callNextUser}
-        disabled={queue.length === 0}
+        onClick={handleCallNext}
         style={{
-          padding: '0.5rem 1rem',
-          marginBottom: '1rem',
-          backgroundColor: '#4CAF50',
-          color: 'white',
+          padding: '0.5rem 1.5rem',
+          backgroundColor: '#007bff',
+          color: '#fff',
           border: 'none',
-          cursor: queue.length > 0 ? 'pointer' : 'not-allowed'
+          borderRadius: '8px',
+          cursor: 'pointer',
+          fontSize: '1rem'
         }}
       >
         📞 Call Next
       </button>
 
-      <h3>🧑‍💻 Queue List:</h3>
-      {queue.length === 0 ? (
-        <p>No users in queue.</p>
-      ) : (
-        <ul>
-          {queue.map((item, i) => (
-            <li key={i}>{item.email || 'Unknown User'}</li>
-          ))}
-        </ul>
+      {message && (
+        <div style={{ marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#d4edda', color: '#155724', borderRadius: '5px' }}>
+          {message}
+        </div>
       )}
+
+      <h3 style={{ marginTop: '2rem' }}>📋 Current Queue</h3>
+      <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+        {queue.map((user, index) => (
+          <li key={user.id} style={{ padding: '0.5rem 0', borderBottom: '1px solid #ccc' }}>
+            <strong>{index + 1}.</strong> {user.email}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

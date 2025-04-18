@@ -1,9 +1,12 @@
+// client/src/pages/Dashboard.js
 import React, { useEffect, useState } from 'react';
-import socket from '../socket';
+import AdminDashboard from './AdminDashboard';
+import UserDashboard from './UserDashboard';
+import { useNavigate } from 'react-router-dom';
 
-function UserDashboard() {
+function Dashboard() {
   const [user, setUser] = useState(null);
-  const [queueMessage, setQueueMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -11,55 +14,42 @@ function UserDashboard() {
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
       if (!token) {
-        alert('Please log in first.');
-        window.location.href = '/login';
+        navigate('/login');
         return;
       }
 
       try {
         const res = await fetch(`${apiUrl}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const data = await res.json();
 
         if (res.ok) {
           setUser(data);
-          socket.emit('joinQueue', { email: data.email, id: data._id });
-          console.log('🟢 Joined queue as:', data.email);
         } else {
-          console.warn('⚠️ Failed to fetch user info:', data.message);
-          alert(data.message || 'Failed to fetch user info.');
+          alert(data.message || 'Failed to authenticate');
+          navigate('/login');
         }
-      } catch (err) {
-        console.error('❌ Error fetching user info:', err);
-        alert('Server error. Please try again later.');
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Server error.');
+        navigate('/login');
       }
     };
 
     fetchUserInfo();
+  }, [navigate]);
 
-    const handleQueueUpdate = (info) => {
-      console.log('📥 Queue update received:', info);
-      setQueueMessage(`📢 ${info.email} joined the queue`);
-    };
+  if (!user) return <p style={{ textAlign: 'center' }}>🔄 Loading Dashboard...</p>;
 
-    socket.on('queueUpdated', handleQueueUpdate);
-
-    return () => {
-      socket.off('queueUpdated', handleQueueUpdate);
-    };
-  }, []);
-
-  if (!user) return <p style={{ textAlign: 'center' }}>🔄 Loading your dashboard...</p>;
-
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h2>🙋 Welcome, {user.email}</h2>
-      <p><strong>Your ID:</strong> {user._id}</p>
-      {queueMessage && <p style={{ color: 'green' }}>{queueMessage}</p>}
-    </div>
+  return user.role === 'admin' ? (
+    <AdminDashboard user={user} />
+  ) : (
+    <UserDashboard user={user} />
   );
 }
 
-export default UserDashboard;
+export default Dashboard;

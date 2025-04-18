@@ -8,40 +8,30 @@ const cors = require('cors');
 dotenv.config();
 const app = express();
 
-// ✅ Regex-safe allowed origins including dynamic Netlify previews
+// ✅ Regex-safe allowed origins
 const allowedOrigins = [
-  /^https:\/\/.*netlify\.app$/,      // Allow all netlify preview domains
-  'http://localhost:3000'
+  /^https:\/\/.*netlify\.app$/,
+  'http://localhost:3000',
 ];
 
-// ✅ CORS Preflight handler (must come before route handlers)
 app.options('*', cors());
 
-// ✅ CORS middleware with origin logging
 app.use(cors({
   origin: function (origin, callback) {
-    console.log('🔍 Incoming request origin:', origin); // Debugging CORS
-    if (!origin) return callback(null, true); // Allow mobile/postman/etc
-
-    const isAllowed = allowedOrigins.some((o) => {
-      if (typeof o === 'string') return o === origin;
-      if (o instanceof RegExp) return o.test(origin);
-      return false;
-    });
-
-    if (isAllowed) {
-      return callback(null, true);
-    } else {
-      console.warn('❌ Blocked by CORS:', origin);
-      return callback(new Error('Not allowed by CORS'), false);
-    }
+    console.log('🔍 Incoming request origin:', origin);
+    if (!origin) return callback(null, true);
+    const isAllowed = allowedOrigins.some((o) =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    return isAllowed
+      ? callback(null, true)
+      : callback(new Error('Not allowed by CORS'), false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
-// ✅ Parse incoming JSON
 app.use(express.json());
 
 // ✅ Create HTTP server
@@ -57,7 +47,7 @@ const io = new Server(server, {
   path: '/socket.io',
 });
 
-// ✅ Connect to MongoDB
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -73,20 +63,43 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tokens', require('./routes/tokenRoutes'));
 app.use('/api/queue', require('./routes/queueRoutes'));
 
+// 🔁 Queue Storage (In-Memory)
+let queue = [];
+
 // ✅ Socket.IO Events
 io.on('connection', (socket) => {
   console.log('🟢 Socket connected:', socket.id);
 
   socket.emit('welcome', 'Connected to SmartLine live queue');
 
+  // User joins queue
   socket.on('joinQueue', (data) => {
-    console.log('➕ User joined queue:', data);
-    io.emit('queueUpdated', data);
+    if (!queue.find(u => u.id === data.id)) {
+      queue.push(data);
+      console.log(`➕ ${data.email} added to queue`);
+      io.emit('queueUpdated', { queue });
+    } else {
+      console.log(`⚠️ ${data.email} already in queue`);
+    }
   });
 
-  socket.on('callNextUser', (user) => {
-    console.log('📞 Calling next user:', user);
-    io.emit('userCalled', user);
+  // Admin requests full queue on join
+  socket.on('adminJoin', () => {
+    console.log('🛠️ Admin joined');
+    socket.emit('queueUpdated', { queue });
+  });
+
+  // Admin calls next user
+  socket.on('callNext', () => {
+    if (queue.length > 0) {
+      const nextUser = queue.shift();
+      console.log(`📞 Calling: ${nextUser.email}`);
+      io.emit('queueUpdated', { queue });
+      io.emit('message', `📣 ${nextUser.email} has been called!`);
+    } else {
+      console.log('🚫 No users in queue');
+      socket.emit('message', 'Queue is empty.');
+    }
   });
 
   socket.on('disconnect', () => {
