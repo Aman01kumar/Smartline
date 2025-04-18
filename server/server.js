@@ -5,29 +5,47 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
-// ✅ Load environment variables
 dotenv.config();
 
 const app = express();
 
-// ✅ CORS Configuration (Netlify frontend + local dev)
-const corsOptions = {
-  origin: ['https://smartline-frontend.netlify.app', 'http://localhost:3000'],
+// ✅ CORS Configuration
+const allowedOrigins = [
+  'https://smartline-frontend.netlify.app',
+  'https://smartline-ui.netlify.app',  // ✅ Add this!
+  'http://localhost:3000'
+];
+
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = '❌ The CORS policy does not allow access from this origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-};
+}));
 
-app.use(cors(corsOptions));
+app.options('*', cors()); // ✅ Enable preflight for all routes
 app.use(express.json());
 
 // ✅ Create HTTP server
 const server = http.createServer(app);
 
-// ✅ Initialize Socket.IO (Render compatible)
+// ✅ Initialize Socket.IO
 const io = new Server(server, {
-  cors: corsOptions,
-  path: '/socket.io', // Must match frontend socket config
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+  path: '/socket.io',
 });
 
 // ✅ MongoDB Connection
@@ -38,7 +56,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected'))
 .catch((err) => {
   console.error('❌ MongoDB connection error:', err);
-  process.exit(1); // Optional: Exit if DB fails
+  process.exit(1);
 });
 
 // ✅ Routes
@@ -54,12 +72,12 @@ io.on('connection', (socket) => {
 
   socket.on('joinQueue', (data) => {
     console.log('➕ User joined queue:', data);
-    io.emit('queueUpdated', data); // Broadcast to all
+    io.emit('queueUpdated', data);
   });
 
   socket.on('callNextUser', (user) => {
     console.log('📞 Calling next user:', user);
-    io.emit('userCalled', user); // Broadcast to all
+    io.emit('userCalled', user);
   });
 
   socket.on('disconnect', () => {
@@ -67,7 +85,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// ✅ Error Handler Middleware
+// ✅ Error Handler
 app.use((err, req, res, next) => {
   console.error('❌ Global error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
