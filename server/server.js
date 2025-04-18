@@ -1,5 +1,3 @@
-// server/server.js
-
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -12,20 +10,22 @@ dotenv.config();
 
 const app = express();
 
-// ✅ CORS setup (Use frontend domain in production)
+// ✅ CORS setup (allow frontend domain)
 const corsOptions = {
   origin: 'https://smartline-frontend.netlify.app',
   credentials: true
 };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Optional: Allow preflight requests
 app.use(express.json());
 
 // ✅ Create HTTP server
 const server = http.createServer(app);
 
-// ✅ Initialize Socket.IO
+// ✅ Initialize Socket.IO with correct path
 const io = new Server(server, {
-  cors: corsOptions
+  cors: corsOptions,
+  path: "/socket.io" // 👈 Required for Render
 });
 
 // ✅ MongoDB connection
