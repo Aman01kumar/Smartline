@@ -5,44 +5,43 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
-// Load environment variables
+// Load .env
 dotenv.config();
 
 const app = express();
 
-// ✅ CORS setup (allow frontend domain)
+// CORS: allow frontend domain
 const corsOptions = {
-  origin: 'https://smartline-frontend.netlify.app',
+  origin: ['https://smartline-frontend.netlify.app', 'http://localhost:3000'],
   credentials: true
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Optional: Allow preflight requests
+app.options('*', cors(corsOptions)); 
 app.use(express.json());
 
-// ✅ Create HTTP server
+// Create HTTP server
 const server = http.createServer(app);
 
-// ✅ Initialize Socket.IO with correct path
+// Initialize Socket.IO
 const io = new Server(server, {
   cors: corsOptions,
-  path: "/socket.io" // 👈 Required for Render
+  path: "/socket.io"
 });
 
-// ✅ MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Routes
-const userRoutes = require('./routes/userRoutes');
-const tokenRoutes = require('./routes/tokenRoutes');
-const queueRoutes = require('./routes/queueRoutes'); // 👈 Add this line
+// Routes
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/tokens', require('./routes/tokenRoutes'));
+app.use('/api/queue', require('./routes/queueRoutes'));
 
-app.use('/api/users', userRoutes);
-app.use('/api/tokens', tokenRoutes);
-app.use('/api/queue', queueRoutes); // 👈 Add this line
-
-// ✅ Socket.IO Logic
+// Socket.IO logic
 io.on('connection', (socket) => {
   console.log('🟢 User connected:', socket.id);
 
@@ -63,7 +62,13 @@ io.on('connection', (socket) => {
   });
 });
 
-// ✅ Start Server
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('❌ Server error:', err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
+// Start server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

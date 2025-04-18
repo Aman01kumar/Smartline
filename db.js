@@ -1,5 +1,6 @@
-// db.js (in project root)
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const connectDB = async () => {
   try {
@@ -9,7 +10,7 @@ const connectDB = async () => {
     });
     console.log('✅ MongoDB connected');
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error.message);
+    console.error('❌ MongoDB connection failed:', error.message);
     process.exit(1);
   }
 };

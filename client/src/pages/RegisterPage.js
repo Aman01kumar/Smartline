@@ -10,8 +10,12 @@ function RegisterPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const apiUrl = `${process.env.REACT_APP_API_URL}/users/register`;
-    console.log("📤 Sending registration to:", apiUrl);
+    const baseUrl =
+      process.env.REACT_APP_API_URL ||
+      'https://smartline-backend.onrender.com/api'; // fallback
+
+    const apiUrl = `${baseUrl}/users/register`;
+    console.log("📤 Registering to:", apiUrl);
 
     try {
       const response = await fetch(apiUrl, {
@@ -23,18 +27,19 @@ function RegisterPage() {
       });
 
       const contentType = response.headers.get("content-type");
-      const data = contentType && contentType.includes("application/json")
+      const data = contentType?.includes("application/json")
         ? await response.json()
-        : { message: "Unexpected server response." };
+        : { message: "❗ Unexpected server response (not JSON)" };
 
       if (response.ok) {
         alert('✅ Registered successfully!');
         navigate('/login');
       } else {
+        console.error("❌ Registration failed:", data);
         alert(data.message || '⚠️ Registration failed');
       }
     } catch (error) {
-      console.error('❌ Register Error:', error);
+      console.error('❌ Network or server error:', error);
       alert('Server error. Please try again later.');
     }
   };
@@ -44,7 +49,6 @@ function RegisterPage() {
       <h2>Register</h2>
       <form onSubmit={handleRegister}>
         <input
-          name="email"
           type="email"
           placeholder="Email"
           value={email}
@@ -53,7 +57,6 @@ function RegisterPage() {
         /><br /><br />
 
         <input
-          name="password"
           type="password"
           placeholder="Password"
           value={password}
