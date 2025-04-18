@@ -1,27 +1,48 @@
 const express = require('express');
 const router = express.Router();
 
-// Temporary queue data (replace with DB logic later)
+// Temporary queue data (in-memory)
 let queue = [];
 
-// GET current queue
+/**
+ * @route   GET /api/queue
+ * @desc    Get current queue
+ */
 router.get('/', (req, res) => {
-  res.json({ queue });
+  res.status(200).json(queue);
 });
 
-// POST - Join the queue
+/**
+ * @route   POST /api/queue
+ * @desc    Add a user to the queue
+ */
 router.post('/', (req, res) => {
   const { username } = req.body;
-  if (!username) return res.status(400).json({ message: 'Username is required' });
 
-  queue.push({ username, joinedAt: new Date() });
-  res.status(201).json({ message: 'User added to queue', queue });
+  if (!username || typeof username !== 'string') {
+    return res.status(400).json({ message: 'Valid username is required' });
+  }
+
+  const newUser = {
+    username,
+    joinedAt: new Date(),
+  };
+
+  queue.push(newUser);
+  res.status(201).json({
+    message: 'User added to queue',
+    user: newUser,
+    queue,
+  });
 });
 
-// DELETE - Clear the queue (admin use, optional)
+/**
+ * @route   DELETE /api/queue
+ * @desc    Clear the queue (admin use only)
+ */
 router.delete('/', (req, res) => {
   queue = [];
-  res.json({ message: 'Queue cleared' });
+  res.status(200).json({ message: 'Queue cleared successfully' });
 });
 
 module.exports = router;

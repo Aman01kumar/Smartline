@@ -5,48 +5,46 @@ function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('user');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage('');
 
-    const baseUrl =
-      process.env.REACT_APP_API_URL ||
-      'https://smartline-backend.onrender.com/api'; // fallback
-
-    const apiUrl = `${baseUrl}/users/register`;
-    console.log("📤 Registering to:", apiUrl);
+    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
+    const apiUrl = `${baseUrl}/api/users/register`;
 
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, role })
+        body: JSON.stringify({ email, password, role }),
       });
 
-      const contentType = response.headers.get("content-type");
-      const data = contentType?.includes("application/json")
+      const contentType = response.headers.get('content-type');
+      const data = contentType?.includes('application/json')
         ? await response.json()
-        : { message: "❗ Unexpected server response (not JSON)" };
+        : { message: '⚠️ Unexpected server response.' };
 
       if (response.ok) {
-        alert('✅ Registered successfully!');
+        setMessage('✅ Registered successfully!');
         navigate('/login');
       } else {
-        console.error("❌ Registration failed:", data);
-        alert(data.message || '⚠️ Registration failed');
+        console.error('❌ Registration failed:', data);
+        setMessage(data.message || '⚠️ Registration failed');
       }
     } catch (error) {
-      console.error('❌ Network or server error:', error);
-      alert('Server error. Please try again later.');
+      console.error('❌ Network error:', error);
+      setMessage('❌ Server error. Please try again later.');
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Register</h2>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>📝 Register</h2>
       <form onSubmit={handleRegister}>
         <input
           type="email"
@@ -71,6 +69,10 @@ function RegisterPage() {
 
         <button type="submit">Register</button>
       </form>
+
+      {message && (
+        <p style={{ color: message.includes('✅') ? 'green' : 'red' }}>{message}</p>
+      )}
     </div>
   );
 }

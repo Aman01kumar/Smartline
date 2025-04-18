@@ -8,8 +8,10 @@ function UserDashboard() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       const token = localStorage.getItem('token');
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
+
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/me`, {
+        const res = await fetch(`${apiUrl}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -17,35 +19,39 @@ function UserDashboard() {
 
         if (res.ok) {
           setUser(data);
-          socket.emit('joinQueue', { email: data.email, id: data._id }); // ✅ Join the queue
+          socket.emit('joinQueue', { email: data.email, id: data._id });
+          console.log('🟢 Joined queue as:', data.email);
         } else {
-          alert(data.message || 'Failed to fetch user info');
+          console.warn('⚠️ Failed to fetch user info:', data.message);
+          alert(data.message || 'Failed to fetch user info.');
         }
       } catch (err) {
-        console.error('Error fetching user:', err);
-        alert('Server error');
+        console.error('❌ Error fetching user info:', err);
+        alert('Server error. Please try again later.');
       }
     };
 
     fetchUserInfo();
 
-    // ✅ Handle live queue updates from server
-    socket.on('queueUpdated', (info) => {
-      setQueueMessage(`Queue updated: ${info.email} joined`);
-    });
+    const handleQueueUpdate = (info) => {
+      console.log('📥 Queue update received:', info);
+      setQueueMessage(`📢 ${info.email} joined the queue`);
+    };
+
+    socket.on('queueUpdated', handleQueueUpdate);
 
     return () => {
-      socket.off('queueUpdated');
+      socket.off('queueUpdated', handleQueueUpdate);
     };
   }, []);
 
   if (!user) return <p>Loading user data...</p>;
 
   return (
-    <div>
-      <h2>Welcome, {user.email}</h2>
-      <p>Your ID: {user._id}</p>
-      {queueMessage && <p>{queueMessage}</p>}
+    <div style={{ padding: '2rem' }}>
+      <h2>🙋 Welcome, {user.email}</h2>
+      <p><strong>Your ID:</strong> {user._id}</p>
+      {queueMessage && <p style={{ color: 'green' }}>{queueMessage}</p>}
     </div>
   );
 }

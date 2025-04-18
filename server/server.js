@@ -5,43 +5,45 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
-// Load .env
+// Load environment variables from .env
 dotenv.config();
 
 const app = express();
 
-// CORS: allow frontend domain
+// ✅ CORS Configuration (Netlify frontend + local dev)
 const corsOptions = {
   origin: ['https://smartline-frontend.netlify.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); 
+app.options('*', cors(corsOptions)); // Handle preflight
 app.use(express.json());
 
-// Create HTTP server
+// ✅ Create HTTP server
 const server = http.createServer(app);
 
-// Initialize Socket.IO
+// ✅ Initialize Socket.IO (required path for Render)
 const io = new Server(server, {
   cors: corsOptions,
-  path: "/socket.io"
+  path: "/socket.io" // Important for Render
 });
 
-// Connect to MongoDB
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+.then(() => console.log('✅ MongoDB connected'))
+.catch((err) => console.error('❌ MongoDB connection error:', err));
 
-// Routes
+// ✅ Routes
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tokens', require('./routes/tokenRoutes'));
 app.use('/api/queue', require('./routes/queueRoutes'));
 
-// Socket.IO logic
+// ✅ Socket.IO logic
 io.on('connection', (socket) => {
   console.log('🟢 User connected:', socket.id);
 
@@ -62,13 +64,13 @@ io.on('connection', (socket) => {
   });
 });
 
-// Error handler
+// ✅ Global Error Handler
 app.use((err, req, res, next) => {
   console.error('❌ Server error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
+// ✅ Start Server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

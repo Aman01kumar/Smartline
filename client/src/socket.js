@@ -1,12 +1,15 @@
 import { io } from 'socket.io-client';
 
-// ✅ Ensure API URL is defined
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000'; // fallback for local testing
+// ✅ Use env variable or fallback to localhost for dev
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
+// ✅ Create and export Socket.IO client instance
 const socket = io(apiUrl, {
-  transports: ['websocket'],     // ✅ Use WebSocket (preferred by Render)
-  withCredentials: true,         // ✅ Required if using credentials (cookies, etc.)
-  path: '/socket.io',            // ✅ Must match server's Socket.IO path
+  transports: ['websocket'],
+  withCredentials: true,
+  path: '/socket.io', // ✅ Must match server config on Render
+  reconnectionAttempts: 5, // Optional: Retry on disconnect
+  timeout: 10000, // Optional: Connection timeout
 });
 
 socket.on('connect', () => {

@@ -9,9 +9,12 @@ function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage(''); // Reset message
+
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/users/login`, {
+      const res = await fetch(`${apiUrl}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,22 +24,22 @@ function LoginPage() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        setMessage('Login successful!');
+      if (res.ok && data.token) {
         localStorage.setItem('token', data.token);
-        navigate('/dashboard'); // Redirect after login
+        setMessage('✅ Login successful!');
+        navigate('/dashboard');
       } else {
-        setMessage(data.message || 'Login failed');
+        setMessage(data.message || '❌ Invalid email or password.');
       }
     } catch (err) {
-      console.error(err);
-      setMessage('Something went wrong.');
+      console.error('Login error:', err);
+      setMessage('❌ Something went wrong. Please try again.');
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>🔐 Login</h2>
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -44,17 +47,22 @@ function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-        /><br/>
+        /><br /><br />
+
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-        /><br/>
+        /><br /><br />
+
         <button type="submit">Login</button>
       </form>
-      <p>{message}</p>
+
+      {message && (
+        <p style={{ color: message.includes('✅') ? 'green' : 'red' }}>{message}</p>
+      )}
     </div>
   );
 }
