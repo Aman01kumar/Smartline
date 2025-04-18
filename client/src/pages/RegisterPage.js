@@ -13,7 +13,7 @@ function RegisterPage() {
     setMessage('');
 
     const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
-    const apiUrl = `${baseUrl}/api/users/register`;
+    const apiUrl = `${baseUrl}/users/register`; // ✅ fixed
 
     try {
       const response = await fetch(apiUrl, {

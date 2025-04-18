@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
-// Load environment variables from .env
+// ✅ Load environment variables
 dotenv.config();
 
 const app = express();
@@ -15,63 +15,66 @@ const corsOptions = {
   origin: ['https://smartline-frontend.netlify.app', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
 };
+
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight
 app.use(express.json());
 
 // ✅ Create HTTP server
 const server = http.createServer(app);
 
-// ✅ Initialize Socket.IO (required path for Render)
+// ✅ Initialize Socket.IO (Render compatible)
 const io = new Server(server, {
   cors: corsOptions,
-  path: "/socket.io" // Important for Render
+  path: '/socket.io', // Must match frontend socket config
 });
 
-// ✅ Connect to MongoDB
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
 .then(() => console.log('✅ MongoDB connected'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+.catch((err) => {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1); // Optional: Exit if DB fails
+});
 
 // ✅ Routes
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/tokens', require('./routes/tokenRoutes'));
 app.use('/api/queue', require('./routes/queueRoutes'));
 
-// ✅ Socket.IO logic
+// ✅ Socket.IO Logic
 io.on('connection', (socket) => {
-  console.log('🟢 User connected:', socket.id);
+  console.log('🟢 Socket connected:', socket.id);
 
   socket.emit('welcome', 'Connected to SmartLine live queue');
 
   socket.on('joinQueue', (data) => {
-    console.log('User joined queue:', data);
-    io.emit('queueUpdated', data);
+    console.log('➕ User joined queue:', data);
+    io.emit('queueUpdated', data); // Broadcast to all
   });
 
-  socket.on('callNextUser', (data) => {
-    console.log('Next user called:', data);
-    io.emit('userCalled', data);
+  socket.on('callNextUser', (user) => {
+    console.log('📞 Calling next user:', user);
+    io.emit('userCalled', user); // Broadcast to all
   });
 
   socket.on('disconnect', () => {
-    console.log('🔴 User disconnected:', socket.id);
+    console.log('🔴 Socket disconnected:', socket.id);
   });
 });
 
-// ✅ Global Error Handler
+// ✅ Error Handler Middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Server error:', err.stack);
+  console.error('❌ Global error:', err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // ✅ Start Server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

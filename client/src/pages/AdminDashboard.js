@@ -11,7 +11,7 @@ function AdminDashboard() {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/users`, {
+        const res = await fetch(`${apiUrl}/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -31,7 +31,6 @@ function AdminDashboard() {
 
     fetchUsers();
 
-    // 🧩 Socket Listeners
     socket.on('queueUpdated', (newEntry) => {
       console.log('📥 Queue updated:', newEntry);
       setQueue((prev) => [...prev, newEntry]);

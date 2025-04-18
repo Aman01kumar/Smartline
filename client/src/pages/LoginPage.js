@@ -9,12 +9,12 @@ function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setMessage(''); // Reset message
+    setMessage('');
 
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
     try {
-      const res = await fetch(`${apiUrl}/api/users/login`, {
+      const res = await fetch(`${apiUrl}/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

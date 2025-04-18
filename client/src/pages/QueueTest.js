@@ -11,7 +11,7 @@ const QueueTest = () => {
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
     try {
-      const res = await fetch(`${apiUrl}/api/queue`);
+      const res = await fetch(`${apiUrl}/queue`);
       const data = await res.json();
 
       if (res.ok) {

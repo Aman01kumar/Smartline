@@ -8,7 +8,7 @@ function HomePage() {
   useEffect(() => {
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
-    fetch(`${apiUrl}/api/queue`)
+    fetch(`${apiUrl}/queue`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
         return res.json();

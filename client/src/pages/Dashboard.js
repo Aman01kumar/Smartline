@@ -10,8 +10,14 @@ function UserDashboard() {
       const token = localStorage.getItem('token');
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
 
+      if (!token) {
+        alert('Please log in first.');
+        window.location.href = '/login';
+        return;
+      }
+
       try {
-        const res = await fetch(`${apiUrl}/api/users/me`, {
+        const res = await fetch(`${apiUrl}/users/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -45,7 +51,7 @@ function UserDashboard() {
     };
   }, []);
 
-  if (!user) return <p>Loading user data...</p>;
+  if (!user) return <p style={{ textAlign: 'center' }}>🔄 Loading your dashboard...</p>;
 
   return (
     <div style={{ padding: '2rem' }}>
