@@ -1,54 +1,59 @@
-// server.js
+// server/server.js
+
 const express = require('express');
-const http = require('http'); // For socket server
-const { Server } = require('socket.io'); // Socket.IO
+const http = require('http');
+const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 
-const userRoutes = require('./routes/userRoutes');
-const tokenRoutes = require('./routes/tokenRoutes');
-
-
+// Load environment variables
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); // Create HTTP server
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
 
-app.use(cors());
+// ✅ CORS setup (Use frontend domain in production)
+const corsOptions = {
+  origin: 'https://smartline-frontend.netlify.app',
+  credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Routes
+// ✅ Create HTTP server
+const server = http.createServer(app);
+
+// ✅ Initialize Socket.IO
+const io = new Server(server, {
+  cors: corsOptions
+});
+
+// ✅ MongoDB connection
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
+
+// ✅ Routes
+const userRoutes = require('./routes/userRoutes');
+const tokenRoutes = require('./routes/tokenRoutes');
+
 app.use('/api/users', userRoutes);
 app.use('/api/tokens', tokenRoutes);
 
-// MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch((err) => console.log('❌ MongoDB error:', err));
-  
-// --- Socket.IO logic ---
+// ✅ Socket.IO Logic
 io.on('connection', (socket) => {
   console.log('🟢 User connected:', socket.id);
 
-  // Example: emit welcome message
   socket.emit('welcome', 'Connected to SmartLine live queue');
 
-  // Custom event handlers
   socket.on('joinQueue', (data) => {
     console.log('User joined queue:', data);
-    io.emit('queueUpdated', data); // Notify all users
+    io.emit('queueUpdated', data);
   });
 
   socket.on('callNextUser', (data) => {
     console.log('Next user called:', data);
-    io.emit('userCalled', data); // Notify all users
+    io.emit('userCalled', data);
   });
 
   socket.on('disconnect', () => {
@@ -56,7 +61,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Start server
+// ✅ Start Server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

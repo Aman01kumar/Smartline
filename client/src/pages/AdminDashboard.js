@@ -23,7 +23,7 @@ function AdminDashboard() {
 
     fetchUsers();
 
-    // Listen for live updates
+    // 🔁 Socket listeners
     socket.on('queueUpdated', (data) => {
       console.log('Queue updated:', data);
       setQueue((prev) => [...prev, data]);
@@ -31,7 +31,7 @@ function AdminDashboard() {
 
     socket.on('userCalled', (data) => {
       console.log('User called:', data);
-      alert(`Calling next user: ${data}`);
+      alert(`Calling next user: ${data.email || data}`);
     });
 
     return () => {
@@ -41,23 +41,27 @@ function AdminDashboard() {
   }, []);
 
   const callNextUser = () => {
-    const next = queue.shift();
-    if (next) {
-      socket.emit('callNextUser', next);
-      setQueue(queue);
-    } else {
+    if (queue.length === 0) {
       alert('Queue is empty');
+      return;
     }
+
+    const [nextUser, ...remainingQueue] = queue;
+    socket.emit('callNextUser', nextUser);
+    setQueue(remainingQueue);
   };
 
   return (
     <div>
-      <h2>Admin Dashboard</h2>
-      <button onClick={callNextUser}>Call Next</button>
-      <h3>Current Queue:</h3>
+      <h2>👨‍💼 Admin Dashboard</h2>
+      <button onClick={callNextUser} disabled={queue.length === 0}>
+        📞 Call Next
+      </button>
+
+      <h3>🧑‍💻 Current Queue:</h3>
       <ul>
         {queue.map((item, i) => (
-          <li key={i}>{item.email}</li>
+          <li key={i}>{item.email || 'Unknown User'}</li>
         ))}
       </ul>
     </div>
