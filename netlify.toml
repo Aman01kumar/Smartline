@@ -1,16 +1,16 @@
 [build]
-  base = "client"             # Set base directory to /client
-  command = "npm run build"   # Build command for React
-  publish = "build"           # Build output directory
+  base = "client"                  # Set base directory to /client
+  command = "npm run build"        # React build command
+  publish = "build"                # Build output directory
 
-# Proxy API requests to Render backend
+# 🔁 Proxy API requests to your Render backend
 [[redirects]]
   from = "/api/*"
   to = "https://smartline-backend.onrender.com/api/:splat"
   status = 200
-  force = true                # Optional: Forces proxy, even if Netlify finds a matching file
+  force = true                     # Force proxy even if Netlify matches a static file
 
-# Redirect all routes to index.html for SPA behavior
+# 🔁 SPA fallback to index.html for React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"
