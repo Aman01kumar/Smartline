@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
@@ -8,16 +9,17 @@ import RegisterPage from './pages/RegisterPage';
 import AdminDashboard from './pages/AdminDashboard';
 import UserDashboard from './pages/UserDashboard';
 import LogoutPage from './pages/LogoutPage';
+
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// Mock authentication hook
+// Custom hook to get auth details
 const useAuth = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   return {
     user,
     isAdmin: user?.role === 'admin',
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 };
 
@@ -27,7 +29,9 @@ const App = () => {
   return (
     <Router>
       <Header />
+
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
@@ -44,10 +48,11 @@ const App = () => {
           path="/user-dashboard"
           element={isAuthenticated && !isAdmin ? <UserDashboard user={user} /> : <Navigate to="/login" />}
         />
-        
-        {/* Catch-all */}
+
+        {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+
       <Footer />
     </Router>
   );

@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import './HomePage.css';
 
 function HomePage() {
@@ -27,9 +25,12 @@ function HomePage() {
 
   return (
     <div className="homepage">
-      <Header />
-
-      <motion.section className="hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+      <motion.section
+        className="hero"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
         <h1>Welcome to SmartLine</h1>
         <p>Manage queues smarter with real-time updates and seamless control.</p>
         <div className="hero-buttons">
@@ -77,17 +78,19 @@ function HomePage() {
         <h2>Live Queue Preview</h2>
         {loading && <p className="status">Loading...</p>}
         {error && <p className="status error">{error}</p>}
-        {!loading && !error && queueData.length === 0 && <p className="status">The queue is empty.</p>}
+        {!loading && !error && queueData.length === 0 && (
+          <p className="status">The queue is empty.</p>
+        )}
         {!loading && queueData.length > 0 && (
           <ul className="queue-list">
             {queueData.map((user, index) => (
-              <li key={user._id || index}>{user.name || user.email || 'User'}</li>
+              <li key={user._id || index}>
+                {user.name || user.email || 'User'}
+              </li>
             ))}
           </ul>
         )}
       </section>
-
-      <Footer />
     </div>
   );
 }
