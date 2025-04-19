@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import socket from '../socket';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import './UserDashboard.css';
-
 
 const UserDashboard = ({ user }) => {
   const [queue, setQueue] = useState([]);
   const [joined, setJoined] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchQueue = async () => {
@@ -63,6 +64,13 @@ const UserDashboard = ({ user }) => {
     toast.info('🙌 You’ve joined the queue!');
   };
 
+  const handleLogout = () => {
+    socket.disconnect(); // Disconnect socket on logout
+    localStorage.removeItem('user'); // Or however you're storing user data
+    toast.info('👋 Logged out successfully');
+    navigate('/logout'); // or navigate('/login') depending on your flow
+  };
+
   return (
     <motion.div
       className="user-dashboard-container"
@@ -75,7 +83,11 @@ const UserDashboard = ({ user }) => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="user-dashboard-title">👋 Welcome, {user.email}</h1>
+        <div className="dashboard-header">
+          <h1 className="user-dashboard-title">👋 Welcome, {user.email}</h1>
+          <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+        </div>
+
         <p className="user-id">
           Your ID: <span className="user-id-tag">{user._id}</span>
         </p>

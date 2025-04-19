@@ -1,14 +1,15 @@
-// client/src/pages/AdminDashboard.js
 import React, { useEffect, useState } from 'react';
 import socket from '../socket';
 import { motion, AnimatePresence } from 'framer-motion';
-import './AdminDashboard.css'; // Custom CSS
+import { useNavigate } from 'react-router-dom';
+import './AdminDashboard.css';
 
 function AdminDashboard({ user }) {
   const [queue, setQueue] = useState([]);
   const [message, setMessage] = useState('');
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [newUserEmail, setNewUserEmail] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     socket.emit('adminJoin');
@@ -70,6 +71,11 @@ function AdminDashboard({ user }) {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Clear token
+    navigate("/logout"); // Redirect
+  };
+
   return (
     <motion.div
       className="admin-dashboard-container"
@@ -82,7 +88,10 @@ function AdminDashboard({ user }) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="dashboard-title">🛠️ Admin Dashboard</h2>
+        <div className="dashboard-header">
+          <h2 className="dashboard-title">🛠️ Admin Dashboard</h2>
+          <button className="logout-button" onClick={handleLogout}>Logout</button>
+        </div>
 
         <button onClick={handleCallNext} className="call-button">
           📞 Call Next

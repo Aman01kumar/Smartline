@@ -16,11 +16,36 @@
     max-width: 600px;
   }
   
+  /* Header section with logout */
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  
   .user-dashboard-title {
     font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
     color: #6b46c1;
+    margin: 0;
+  }
+  
+  .logout-btn {
+    background: #e53e3e;
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 9999px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .logout-btn:hover {
+    background: #c53030;
   }
   
   .user-id {
