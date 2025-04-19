@@ -7,13 +7,15 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage('');
+    setLoading(true);
 
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000/api';
 
     try {
       const res = await fetch(`${apiUrl}/users/login`, {
@@ -25,25 +27,29 @@ function LoginPage() {
       });
 
       const data = await res.json();
+      setLoading(false);
 
       if (res.ok && data.token) {
-        // Save token and user info to localStorage
+        // Save token and user info
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        setMessage('✅ Login successful!');
+        setMessage('✅ Login successful! Redirecting...');
 
-        // Redirect based on role
-        if (data.user.role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
-        }
+        // Redirect based on user role
+        setTimeout(() => {
+          if (data.user.role === 'admin') {
+            navigate('/admin');
+          } else {
+            navigate('/dashboard');
+          }
+        }, 1000);
       } else {
         setMessage(data.message || '❌ Invalid email or password.');
       }
     } catch (err) {
       console.error('Login error:', err);
+      setLoading(false);
       setMessage('❌ Something went wrong. Please try again.');
     }
   };
@@ -81,8 +87,8 @@ function LoginPage() {
             className="login-input"
           />
 
-          <button type="submit" className="login-button">
-            Login
+          <button type="submit" className="login-button" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
