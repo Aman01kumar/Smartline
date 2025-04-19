@@ -6,8 +6,7 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import AdminDashboard from './pages/AdminDashboard';
-import UserDashboard from './pages/UserDashboard';
+import Dashboard from './pages/Dashboard'; // 👈 unified dashboard
 import LogoutPage from './pages/LogoutPage';
 
 import Header from './components/Header';
@@ -18,13 +17,12 @@ const useAuth = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   return {
     user,
-    isAdmin: user?.role === 'admin',
     isAuthenticated: !!user,
   };
 };
 
 const App = () => {
-  const { user, isAdmin, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Router>
@@ -39,14 +37,10 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogoutPage />} />
 
-        {/* Protected Routes */}
+        {/* Unified Protected Route */}
         <Route
-          path="/admin-dashboard"
-          element={isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/user-dashboard"
-          element={isAuthenticated && !isAdmin ? <UserDashboard user={user} /> : <Navigate to="/login" />}
+          path="/dashboard"
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
 
         {/* Fallback Route */}

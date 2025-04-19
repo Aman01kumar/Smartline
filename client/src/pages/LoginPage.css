@@ -43,6 +43,23 @@
     box-shadow: 0 0 0 2px #c7d2fe;
   }
   
+  .login-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .forgot-password {
+    color: #6366f1;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+  
   .login-button {
     background: #4f46e5;
     color: white;
@@ -70,5 +87,54 @@
   
   .login-message.error {
     color: #dc2626;
+  }
+  
+  .social-login {
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+  
+  .or-divider {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+  
+  .social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .social-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .social-button img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .social-button:hover {
+    background: #f3f4f6;
+  }
+  
+  .social-button.google {
+    color: #ea4335;
+    border-color: #ea4335;
+  }
+  
+  .social-button.github {
+    color: #333;
+    border-color: #333;
   }
   
