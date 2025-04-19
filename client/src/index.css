@@ -1,38 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global base styles */
 body {
+  @apply bg-gray-100 text-gray-800 font-sans;
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
 }
 
+/* Link styling */
 a {
-  color: #007bff;
-  text-decoration: none;
-  margin: 0 10px;
-  transition: color 0.2s ease;
+  @apply text-blue-500 mx-2 transition-colors duration-200 ease-in-out no-underline;
 }
 
 a:hover {
-  color: #0056b3;
+  @apply text-blue-700;
 }
 
+/* Centered headings */
 h1 {
-  text-align: center;
-  margin-top: 2rem;
+  @apply text-center mt-8 text-3xl font-bold;
 }
 
-/* Optional button styling for consistency */
+/* Button base styling */
 button {
-  padding: 0.5rem 1rem;
+  @apply px-4 py-2 rounded-md bg-blue-500 text-white font-medium transition-colors duration-200 ease-in-out;
   border: none;
-  background-color: #007bff;
-  color: white;
-  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  @apply bg-blue-600;
 }

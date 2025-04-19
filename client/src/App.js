@@ -11,14 +11,24 @@ import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import QueueTest from './pages/QueueTest';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+
+// ✅ Shared components
+import Header from './components/Header';
 
 function App() {
   return (
     <Router>
       <div className="App">
-        {/* ✅ Routes */}
+        {/* ✅ Header - visible on all routes */}
+        <Header />
+
+        {/* ✅ Route definitions */}
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -26,7 +36,7 @@ function App() {
           <Route path="/test-queue" element={<QueueTest />} />
         </Routes>
 
-        {/* ✅ Toast container for global notifications */}
+        {/* ✅ Global toast notifications */}
         <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
       </div>
     </Router>

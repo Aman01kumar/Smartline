@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminDashboard from './AdminDashboard';
 import UserDashboard from './UserDashboard';
+import { motion } from 'framer-motion';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -44,18 +45,36 @@ function Dashboard() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="text-2xl animate-pulse text-gray-600">🔄 Loading Dashboard...</div>
-        </div>
-      </div>
+      <motion.div
+        className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div
+          className="text-center text-white"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+        >
+          <h2 className="text-3xl font-semibold animate-pulse">🔄 Loading Dashboard...</h2>
+          <p className="mt-2 text-lg">Fetching your profile details...</p>
+        </motion.div>
+      </motion.div>
     );
   }
 
-  return user.role === 'admin' ? (
-    <AdminDashboard user={user} />
-  ) : (
-    <UserDashboard user={user} />
+  return (
+    <motion.div
+      className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-200"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      {user.role === 'admin' ? (
+        <AdminDashboard user={user} />
+      ) : (
+        <UserDashboard user={user} />
+      )}
+    </motion.div>
   );
 }
 

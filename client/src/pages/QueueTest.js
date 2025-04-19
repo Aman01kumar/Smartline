@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 
 const QueueTest = () => {
   const [queue, setQueue] = useState([]);
@@ -28,37 +29,54 @@ const QueueTest = () => {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">📋 Queue Test Page</h2>
-
-      <button
-        onClick={fetchQueue}
-        disabled={loading}
-        className={`px-4 py-2 rounded text-white transition ${
-          loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-        }`}
+    <motion.div
+      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      <motion.div
+        className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
-        {loading ? 'Loading...' : 'Load Queue'}
-      </button>
+        <h2 className="text-3xl font-bold text-center text-purple-700 mb-6">📋 Queue Test Page</h2>
 
-      {error && <p className="mt-4 text-red-600">{error}</p>}
+        <div className="flex justify-center">
+          <button
+            onClick={fetchQueue}
+            disabled={loading}
+            className={`px-6 py-2 rounded-full font-semibold text-white transition duration-300 ${
+              loading ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+            }`}
+          >
+            {loading ? 'Loading...' : 'Load Queue'}
+          </button>
+        </div>
 
-      <ul className="mt-6 space-y-2">
-        {queue.length > 0 ? (
-          queue.map((user, index) => (
-            <li
-              key={index}
-              className="border p-3 rounded bg-gray-100 shadow-sm flex items-center"
-            >
-              👤 {user.name || user.email || `User ${index + 1}`}
-            </li>
-          ))
-        ) : (
-          !loading &&
-          !error && <p className="text-gray-500 mt-4">No one in the queue yet.</p>
-        )}
-      </ul>
-    </div>
+        {error && <p className="mt-4 text-center text-red-600">{error}</p>}
+
+        <ul className="mt-6 space-y-3">
+          {queue.length > 0 ? (
+            queue.map((user, index) => (
+              <motion.li
+                key={index}
+                className="bg-gray-100 p-4 rounded-xl shadow flex items-center text-gray-700"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 200 }}
+              >
+                👤 {user.name || user.email || `User ${index + 1}`}
+              </motion.li>
+            ))
+          ) : (
+            !loading &&
+            !error && (
+              <p className="text-center text-gray-500 mt-4">No one in the queue yet.</p>
+            )
+          )}
+        </ul>
+      </motion.div>
+    </motion.div>
   );
 };
 
