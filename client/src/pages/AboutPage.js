@@ -1,15 +1,11 @@
 // client/src/pages/AboutPage.js
 import React from 'react';
 import { motion } from 'framer-motion';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import './AboutPage.css';
+import './AboutPage.css'; // Keep your custom styling
 
 function AboutPage() {
   return (
     <div className="about-page">
-      <Header />
-
       <motion.div
         className="about-container"
         initial={{ opacity: 0 }}
@@ -35,8 +31,6 @@ function AboutPage() {
           create a seamless and organized experience for both admins and users.
         </p>
       </motion.div>
-
-      <Footer />
     </div>
   );
 }
