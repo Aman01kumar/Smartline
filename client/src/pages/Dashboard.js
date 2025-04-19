@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminDashboard from './AdminDashboard';
 import UserDashboard from './UserDashboard';
 import { motion } from 'framer-motion';
+import './Dashboard.css'; // plain CSS styling
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -46,18 +47,18 @@ function Dashboard() {
   if (!user) {
     return (
       <motion.div
-        className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600"
+        className="dashboard-loading"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
         <motion.div
-          className="text-center text-white"
+          className="loading-text"
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
         >
-          <h2 className="text-3xl font-semibold animate-pulse">🔄 Loading Dashboard...</h2>
-          <p className="mt-2 text-lg">Fetching your profile details...</p>
+          <h2 className="loading-title">🔄 Loading Dashboard...</h2>
+          <p className="loading-subtitle">Fetching your profile details...</p>
         </motion.div>
       </motion.div>
     );
@@ -65,7 +66,7 @@ function Dashboard() {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-200"
+      className="dashboard-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >

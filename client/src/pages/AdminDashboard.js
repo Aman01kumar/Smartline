@@ -1,21 +1,23 @@
+// client/src/pages/AdminDashboard.js
 import React, { useEffect, useState } from 'react';
 import socket from '../socket';
 import { motion, AnimatePresence } from 'framer-motion';
+import './AdminDashboard.css'; // Custom CSS
 
 function AdminDashboard({ user }) {
   const [queue, setQueue] = useState([]);
   const [message, setMessage] = useState('');
+  const [registeredUsers, setRegisteredUsers] = useState([]);
+  const [newUserEmail, setNewUserEmail] = useState('');
 
   useEffect(() => {
     socket.emit('adminJoin');
 
     const handleQueueUpdate = (data) => {
-      console.log('📥 Queue updated:', data.queue);
       setQueue(data.queue);
     };
 
     const handleMessage = (msg) => {
-      console.log('📢 Message:', msg);
       setMessage(msg);
       setTimeout(() => setMessage(''), 4000);
     };
@@ -23,41 +25,73 @@ function AdminDashboard({ user }) {
     socket.on('queueUpdated', handleQueueUpdate);
     socket.on('message', handleMessage);
 
+    fetchRegisteredUsers();
+
     return () => {
       socket.off('queueUpdated', handleQueueUpdate);
       socket.off('message', handleMessage);
     };
   }, []);
 
+  const fetchRegisteredUsers = async () => {
+    try {
+      const res = await fetch('/api/users');
+      const data = await res.json();
+      setRegisteredUsers(data);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
+    }
+  };
+
   const handleCallNext = () => {
     socket.emit('callNext');
   };
 
+  const handleRemoveUser = async (id) => {
+    try {
+      await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      fetchRegisteredUsers();
+    } catch (err) {
+      console.error('Error deleting user:', err);
+    }
+  };
+
+  const handleAddUser = async () => {
+    try {
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newUserEmail }),
+      });
+      setNewUserEmail('');
+      fetchRegisteredUsers();
+    } catch (err) {
+      console.error('Error adding user:', err);
+    }
+  };
+
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-pink-100 to-yellow-100 flex items-center justify-center py-12 px-4"
+      className="admin-dashboard-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-2xl"
+        className="dashboard-box"
         initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-bold text-pink-700 mb-4">🛠️ Admin Dashboard</h2>
+        <h2 className="dashboard-title">🛠️ Admin Dashboard</h2>
 
-        <button
-          onClick={handleCallNext}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full shadow-md transition mb-4"
-        >
+        <button onClick={handleCallNext} className="call-button">
           📞 Call Next
         </button>
 
         <AnimatePresence>
           {message && (
             <motion.div
-              className="mt-2 mb-6 p-4 rounded-md bg-green-100 text-green-800 font-semibold shadow-sm"
+              className="message-box"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -67,21 +101,38 @@ function AdminDashboard({ user }) {
           )}
         </AnimatePresence>
 
-        <h3 className="text-xl font-semibold mb-3 text-gray-800">📋 Current Queue</h3>
+        <h3 className="section-title">📋 Current Queue</h3>
         {queue.length === 0 ? (
-          <p className="text-gray-500 italic">No users in the queue.</p>
+          <p className="empty-text">No users in the queue.</p>
         ) : (
-          <ul className="divide-y divide-gray-300 rounded overflow-hidden bg-gray-50 shadow-inner">
+          <ul className="user-list">
             {queue.map((user, index) => (
-              <li
-                key={user.id || user._id || index}
-                className="px-4 py-3 text-gray-700 hover:bg-gray-100 transition"
-              >
-                <strong className="mr-2">{index + 1}.</strong> {user.email}
+              <li key={user._id || index} className="user-item">
+                <strong>{index + 1}.</strong> {user.email}
               </li>
             ))}
           </ul>
         )}
+
+        <h3 className="section-title">👥 Registered Users</h3>
+        <ul className="user-list">
+          {registeredUsers.map((u) => (
+            <li key={u._id} className="user-item">
+              {u.email}
+              <button onClick={() => handleRemoveUser(u._id)} className="remove-btn">❌</button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="add-user-form">
+          <input
+            type="email"
+            value={newUserEmail}
+            onChange={(e) => setNewUserEmail(e.target.value)}
+            placeholder="Enter new user email"
+          />
+          <button onClick={handleAddUser}>➕ Add User</button>
+        </div>
       </motion.div>
     </motion.div>
   );

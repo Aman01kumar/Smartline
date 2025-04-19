@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import './LoginPage.css'; // plain CSS styles
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -26,9 +27,18 @@ function LoginPage() {
       const data = await res.json();
 
       if (res.ok && data.token) {
+        // Save token and user info to localStorage
         localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
         setMessage('✅ Login successful!');
-        navigate('/dashboard');
+
+        // Redirect based on role
+        if (data.user.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
         setMessage(data.message || '❌ Invalid email or password.');
       }
@@ -40,26 +50,26 @@ function LoginPage() {
 
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 p-4"
+      className="login-wrapper"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md"
+        className="login-box"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-bold text-center text-indigo-700 mb-6">🔐 Login</h2>
+        <h2 className="login-title">🔐 Login</h2>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="login-form">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="login-input"
           />
 
           <input
@@ -68,21 +78,18 @@ function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="login-input"
           />
 
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-200"
-          >
+          <button type="submit" className="login-button">
             Login
           </button>
         </form>
 
         {message && (
           <p
-            className={`mt-4 text-center font-medium ${
-              message.includes('✅') ? 'text-green-600' : 'text-red-500'
+            className={`login-message ${
+              message.includes('✅') ? 'success' : 'error'
             }`}
           >
             {message}

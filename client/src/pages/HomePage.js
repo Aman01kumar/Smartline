@@ -1,6 +1,10 @@
+// client/src/pages/HomePage.js
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import './HomePage.css';
 
 function HomePage() {
   const [queueData, setQueueData] = useState([]);
@@ -10,161 +14,80 @@ function HomePage() {
   useEffect(() => {
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:10000';
     fetch(`${apiUrl}/queue`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.ok ? res.json() : Promise.reject(res))
       .then((data) => {
         setQueueData(data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setError('Failed to load queue data.');
         setLoading(false);
       });
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-white text-gray-800 font-sans">
+    <div className="homepage">
+      <Header />
 
-      {/* Hero Section */}
-      <motion.section
-        className="bg-blue-600 text-white py-20 px-4 sm:px-8 text-center"
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Welcome to SmartLine</h1>
-        <p className="text-md sm:text-lg mb-6 max-w-2xl mx-auto">
-          A smarter way to manage your time in queues. Real-time updates and seamless experience.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Link
-            to="/login"
-            className="bg-white text-blue-600 font-semibold px-6 py-2 rounded hover:bg-gray-100 transition"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="border border-white px-6 py-2 rounded font-semibold hover:bg-white hover:text-blue-600 transition"
-          >
-            Register
-          </Link>
+      <motion.section className="hero" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+        <h1>Welcome to SmartLine</h1>
+        <p>Manage queues smarter with real-time updates and seamless control.</p>
+        <div className="hero-buttons">
+          <Link to="/login" className="btn primary">Login</Link>
+          <Link to="/register" className="btn secondary">Register</Link>
         </div>
       </motion.section>
 
-      {/* Features Section */}
-      <motion.section
-        className="py-16 px-4 sm:px-8 text-center bg-slate-100"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <h2 className="text-2xl sm:text-3xl font-bold mb-10">Why Choose SmartLine?</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {[
-            {
-              icon: '⏱️',
-              title: 'Real-time Updates',
-              desc: 'Track your position in the queue as it moves.',
-            },
-            {
-              icon: '📱',
-              title: 'User Friendly UI',
-              desc: 'Intuitive interface for all age groups.',
-            },
-            {
-              icon: '🧠',
-              title: 'Admin Control',
-              desc: 'Manage queues and users with ease.',
-            },
-          ].map((f, idx) => (
-            <motion.div
-              key={idx}
-              className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition"
-              whileHover={{ scale: 1.03 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="text-4xl mb-3">{f.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
-              <p className="text-gray-600">{f.desc}</p>
-            </motion.div>
-          ))}
+      <section className="features">
+        <h2>Why Choose SmartLine?</h2>
+        <div className="feature-cards">
+          <div className="feature-card">
+            <span>⏱️</span>
+            <h3>Real-Time Updates</h3>
+            <p>See your position in the queue live.</p>
+          </div>
+          <div className="feature-card">
+            <span>📱</span>
+            <h3>User Friendly</h3>
+            <p>Simple interface for all users.</p>
+          </div>
+          <div className="feature-card">
+            <span>🧠</span>
+            <h3>Admin Control</h3>
+            <p>Manage queues effortlessly.</p>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Testimonials Section */}
-      <motion.section
-        className="py-16 px-4 sm:px-8 bg-white text-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-      >
-        <h2 className="text-2xl sm:text-3xl font-bold mb-10">What Our Users Say</h2>
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            {
-              feedback: '"SmartLine saved us hours of waiting time. It\'s brilliant!"',
-              name: '- Ayesha, Student',
-            },
-            {
-              feedback: '"Super smooth experience. Managing queues was never this easy."',
-              name: '- Ahmed, Admin',
-            },
-          ].map((t, idx) => (
-            <motion.div
-              key={idx}
-              className="bg-slate-50 p-6 rounded-lg shadow hover:shadow-md"
-              whileHover={{ scale: 1.02 }}
-            >
-              <p className="italic text-gray-700">{t.feedback}</p>
-              <p className="mt-2 font-semibold text-blue-700">{t.name}</p>
-            </motion.div>
-          ))}
+      <section className="testimonials">
+        <h2>What Our Users Say</h2>
+        <div className="testimonial-cards">
+          <div className="testimonial">
+            <p>"SmartLine saved me hours of waiting!"</p>
+            <span>- Ayesha, Student</span>
+          </div>
+          <div className="testimonial">
+            <p>"Smooth experience and great control."</p>
+            <span>- Ahmed, Admin</span>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Live Queue Preview */}
-      <motion.section
-        className="py-16 px-4 sm:px-8 bg-slate-100 text-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-      >
-        <h2 className="text-xl sm:text-2xl font-bold mb-6">📋 Live Queue Preview</h2>
-        {loading && <p className="text-gray-500 animate-pulse">Loading queue...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+      <section className="queue-preview">
+        <h2>Live Queue Preview</h2>
+        {loading && <p className="status">Loading...</p>}
+        {error && <p className="status error">{error}</p>}
+        {!loading && !error && queueData.length === 0 && <p className="status">The queue is empty.</p>}
         {!loading && queueData.length > 0 && (
-          <ul className="list-disc list-inside max-w-md mx-auto text-left">
+          <ul className="queue-list">
             {queueData.map((user, index) => (
-              <li key={user._id || index}>
-                {user.name || user.email || 'Anonymous User'}
-              </li>
+              <li key={user._id || index}>{user.name || user.email || 'User'}</li>
             ))}
           </ul>
         )}
-        {!loading && !error && queueData.length === 0 && (
-          <p className="text-gray-600 mt-4">The queue is currently empty.</p>
-        )}
-      </motion.section>
+      </section>
 
-      {/* Footer */}
-      <footer className="bg-blue-700 text-white py-6 mt-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4">
-          <div>
-            <h3 className="text-lg sm:text-xl font-bold">SmartLine</h3>
-            <p className="text-sm">Smart. Simple. Streamlined.</p>
-          </div>
-          <div className="text-sm">
-            <p>Contact: support@smartline.com</p>
-            <p>© {new Date().getFullYear()} SmartLine Inc. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

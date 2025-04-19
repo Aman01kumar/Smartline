@@ -1,0 +1,29 @@
+/* client/src/pages/AboutPage.css */
+
+.about-page {
+    font-family: Arial, sans-serif;
+  }
+  
+  .about-container {
+    max-width: 800px;
+    margin: 80px auto;
+    background-color: #fff;
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .about-title {
+    font-size: 2.5rem;
+    color: #6b3fa0;
+    margin-bottom: 25px;
+    text-align: center;
+  }
+  
+  .about-text {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  

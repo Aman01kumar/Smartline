@@ -1,36 +1,104 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Custom global base styles */
+/* ===== Global Base Styles ===== */
 body {
-  @apply bg-gray-100 text-gray-800 font-sans;
+  background-color: #f3f4f6; /* light gray */
+  color: #1f2937; /* dark gray */
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
+  line-height: 1.6;
 }
 
-/* Link styling */
+/* ===== Typography ===== */
+h1 {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 1rem 0;
+}
+
+/* ===== Links ===== */
 a {
-  @apply text-blue-500 mx-2 transition-colors duration-200 ease-in-out no-underline;
+  color: #3b82f6;
+  margin: 0 0.5rem;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
 a:hover {
-  @apply text-blue-700;
+  color: #1d4ed8;
+  text-decoration: underline;
 }
 
-/* Centered headings */
-h1 {
-  @apply text-center mt-8 text-3xl font-bold;
-}
-
-/* Button base styling */
+/* ===== Buttons ===== */
 button {
-  @apply px-4 py-2 rounded-md bg-blue-500 text-white font-medium transition-colors duration-200 ease-in-out;
+  padding: 0.5rem 1.25rem;
   border: none;
+  border-radius: 0.375rem;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
 }
 
 button:hover {
-  @apply bg-blue-600;
+  background-color: #2563eb;
+}
+
+button:disabled {
+  background-color: #9ca3af; /* gray-400 */
+  cursor: not-allowed;
+}
+
+/* ===== Form Inputs ===== */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #bfdbfe;
+}
+
+/* ===== Layout Utilities ===== */
+.container-centered {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ===== Animations ===== */
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

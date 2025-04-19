@@ -1,5 +1,7 @@
+// client/src/pages/QueueTest.js
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import './QueueTest.css'; // Include this CSS file
 
 const QueueTest = () => {
   const [queue, setQueue] = useState([]);
@@ -30,38 +32,36 @@ const QueueTest = () => {
 
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 p-6"
+      className="queue-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl"
+        className="queue-card"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-bold text-center text-purple-700 mb-6">📋 Queue Test Page</h2>
+        <h2 className="queue-title">📋 Queue Test Page</h2>
 
-        <div className="flex justify-center">
+        <div className="queue-button-container">
           <button
             onClick={fetchQueue}
             disabled={loading}
-            className={`px-6 py-2 rounded-full font-semibold text-white transition duration-300 ${
-              loading ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-            }`}
+            className={`queue-button ${loading ? 'disabled' : ''}`}
           >
             {loading ? 'Loading...' : 'Load Queue'}
           </button>
         </div>
 
-        {error && <p className="mt-4 text-center text-red-600">{error}</p>}
+        {error && <p className="queue-error">{error}</p>}
 
-        <ul className="mt-6 space-y-3">
+        <ul className="queue-list">
           {queue.length > 0 ? (
             queue.map((user, index) => (
               <motion.li
                 key={index}
-                className="bg-gray-100 p-4 rounded-xl shadow flex items-center text-gray-700"
+                className="queue-item"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 200 }}
               >
@@ -71,7 +71,7 @@ const QueueTest = () => {
           ) : (
             !loading &&
             !error && (
-              <p className="text-center text-gray-500 mt-4">No one in the queue yet.</p>
+              <p className="queue-empty">No one in the queue yet.</p>
             )
           )}
         </ul>

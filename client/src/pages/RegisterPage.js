@@ -1,6 +1,8 @@
+// client/src/pages/RegisterPage.js
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import './RegisterPage.css'; // Make sure to import the CSS
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -38,18 +40,18 @@ function RegisterPage() {
 
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-500 to-purple-600 p-6"
+      className="register-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.form
         onSubmit={handleRegister}
-        className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md space-y-6"
+        className="register-form"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-bold text-center text-purple-700">📝 Register</h2>
+        <h2 className="register-title">📝 Register</h2>
 
         <input
           type="email"
@@ -57,7 +59,7 @@ function RegisterPage() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
           required
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="register-input"
         />
 
         <input
@@ -66,27 +68,24 @@ function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
           required
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="register-input"
         />
 
         <select
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+          className="register-input"
         >
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
 
-        <button
-          type="submit"
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-full font-semibold transition duration-300"
-        >
+        <button type="submit" className="register-button">
           Register
         </button>
 
         {message && (
-          <p className={`text-center text-sm ${message.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
+          <p className={`register-message ${message.includes('✅') ? 'success' : 'error'}`}>
             {message}
           </p>
         )}

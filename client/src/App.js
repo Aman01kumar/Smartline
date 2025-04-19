@@ -1,46 +1,56 @@
-// client/src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-// ✅ Page components
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import Dashboard from './pages/Dashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import QueueTest from './pages/QueueTest';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
-
-// ✅ Shared components
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AdminDashboard from './pages/AdminDashboard';
+import UserDashboard from './pages/UserDashboard';
+import LogoutPage from './pages/LogoutPage';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
-function App() {
+// Mock authentication hook
+const useAuth = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  return {
+    user,
+    isAdmin: user?.role === 'admin',
+    isAuthenticated: !!user
+  };
+};
+
+const App = () => {
+  const { user, isAdmin, isAuthenticated } = useAuth();
+
   return (
     <Router>
-      <div className="App">
-        {/* ✅ Header - visible on all routes */}
-        <Header />
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/logout" element={<LogoutPage />} />
 
-        {/* ✅ Route definitions */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/test-queue" element={<QueueTest />} />
-        </Routes>
-
-        {/* ✅ Global toast notifications */}
-        <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
-      </div>
+        {/* Protected Routes */}
+        <Route
+          path="/admin-dashboard"
+          element={isAuthenticated && isAdmin ? <AdminDashboard /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/user-dashboard"
+          element={isAuthenticated && !isAdmin ? <UserDashboard user={user} /> : <Navigate to="/login" />}
+        />
+        
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      <Footer />
     </Router>
   );
-}
+};
 
 export default App;

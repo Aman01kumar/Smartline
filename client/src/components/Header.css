@@ -1,0 +1,70 @@
+/* client/src/components/Header.css */
+
+.header {
+    background-color: #2563eb; /* blue-600 */
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  
+  .menu-toggle {
+    background: none;
+    border: none;
+    color: white;
+    display: none;
+    cursor: pointer;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: white;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-link:hover {
+    color: #cbd5e1; /* light gray */
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .menu-toggle {
+      display: block;
+    }
+  
+    .nav-links {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      margin-top: 16px;
+    }
+  
+    .nav-links.open {
+      display: flex;
+    }
+  
+    .nav-link {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+  

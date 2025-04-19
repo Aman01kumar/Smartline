@@ -1,0 +1,42 @@
+.dashboard-loading {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom right, #6366f1, #8b5cf6);
+  }
+  
+  .loading-text {
+    text-align: center;
+    color: white;
+  }
+  
+  .loading-title {
+    font-size: 2rem;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+  }
+  
+  .loading-subtitle {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+  }
+  
+  /* Simple pulse animation */
+  @keyframes pulse {
+    0% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.8;
+    }
+  }
+  
+  .dashboard-container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #e0e7ff, #ede9fe);
+  }
+  

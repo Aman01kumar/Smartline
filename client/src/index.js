@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
-// ✅ Import global Tailwind + custom styles
+// ✅ Import global plain CSS styles
 import './index.css';
 
 // ✅ Create root and render App

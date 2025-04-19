@@ -1,64 +1,55 @@
-// client/src/pages/ContactPage.js
 import React from 'react';
 import { motion } from 'framer-motion';
+import './ContactPage.css'; // custom CSS
 
 function ContactPage() {
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center px-4 py-12"
+      className="contact-page-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <div className="max-w-xl w-full bg-white p-8 rounded-2xl shadow-2xl">
-        <h1 className="text-4xl font-bold text-purple-700 mb-6">📬 Contact Us</h1>
+      <div className="contact-box">
+        <h1 className="contact-title">📬 Contact Us</h1>
 
-        <p className="text-lg text-gray-700 mb-4">
+        <p className="contact-text">
           We’d love to hear from you! Reach out through the details below.
         </p>
 
-        <div className="space-y-4 text-gray-800 text-lg">
+        <div className="contact-details">
           <p>
             📧 Email:{" "}
-            <a
-              href="mailto:support@smartline.com"
-              className="text-blue-600 hover:underline"
-            >
+            <a href="mailto:support@smartline.com" className="contact-link">
               support@smartline.com
             </a>
           </p>
           <p>
             📞 Phone:{" "}
-            <a
-              href="tel:+1234567890"
-              className="text-blue-600 hover:underline"
-            >
+            <a href="tel:+1234567890" className="contact-link">
               +123-456-7890
             </a>
           </p>
         </div>
 
         {/* Optional contact form for future */}
-        {/* 
-        <form className="mt-6 space-y-4">
+        {/*
+        <form className="contact-form">
           <input
             type="text"
             placeholder="Your Name"
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className="contact-input"
           />
           <input
             type="email"
             placeholder="Your Email"
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className="contact-input"
           />
           <textarea
             placeholder="Your Message"
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className="contact-input"
             rows={4}
           />
-          <button
-            type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg transition"
-          >
+          <button type="submit" className="contact-button">
             Send Message
           </button>
         </form>
