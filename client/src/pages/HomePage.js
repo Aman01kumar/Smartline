@@ -26,18 +26,19 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-100 to-white text-gray-800 font-sans">
+
       {/* Hero Section */}
       <motion.section
-        className="bg-blue-600 text-white py-20 px-6 text-center"
+        className="bg-blue-600 text-white py-20 px-4 sm:px-8 text-center"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h1 className="text-5xl font-bold mb-4">Welcome to SmartLine</h1>
-        <p className="text-lg mb-6 max-w-xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Welcome to SmartLine</h1>
+        <p className="text-md sm:text-lg mb-6 max-w-2xl mx-auto">
           A smarter way to manage your time in queues. Real-time updates and seamless experience.
         </p>
-        <div className="space-x-4">
+        <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             to="/login"
             className="bg-white text-blue-600 font-semibold px-6 py-2 rounded hover:bg-gray-100 transition"
@@ -53,16 +54,16 @@ function HomePage() {
         </div>
       </motion.section>
 
-      {/* Features */}
+      {/* Features Section */}
       <motion.section
-        className="py-16 px-6 text-center bg-slate-100"
+        className="py-16 px-4 sm:px-8 text-center bg-slate-100"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-3xl font-bold mb-10">Why Choose SmartLine?</h2>
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-10">Why Choose SmartLine?</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {[
             {
               icon: '⏱️',
@@ -82,7 +83,7 @@ function HomePage() {
           ].map((f, idx) => (
             <motion.div
               key={idx}
-              className="p-6 bg-white shadow-md rounded-lg"
+              className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition"
               whileHover={{ scale: 1.03 }}
               transition={{ duration: 0.3 }}
             >
@@ -94,16 +95,16 @@ function HomePage() {
         </div>
       </motion.section>
 
-      {/* Testimonials */}
+      {/* Testimonials Section */}
       <motion.section
-        className="py-16 px-6 bg-white text-center"
+        className="py-16 px-4 sm:px-8 bg-white text-center"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="text-3xl font-bold mb-10">What Our Users Say</h2>
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-10">What Our Users Say</h2>
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             {
               feedback: '"SmartLine saved us hours of waiting time. It\'s brilliant!"',
@@ -128,13 +129,13 @@ function HomePage() {
 
       {/* Live Queue Preview */}
       <motion.section
-        className="py-16 px-6 text-center bg-slate-100"
+        className="py-16 px-4 sm:px-8 bg-slate-100 text-center"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
       >
-        <h2 className="text-2xl font-bold mb-6">📋 Live Queue Preview</h2>
+        <h2 className="text-xl sm:text-2xl font-bold mb-6">📋 Live Queue Preview</h2>
         {loading && <p className="text-gray-500 animate-pulse">Loading queue...</p>}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && queueData.length > 0 && (
@@ -153,9 +154,9 @@ function HomePage() {
 
       {/* Footer */}
       <footer className="bg-blue-700 text-white py-6 mt-10">
-        <div className="max-w-6xl mx-auto px-6 text-center md:text-left md:flex md:justify-between">
-          <div className="mb-4 md:mb-0">
-            <h3 className="text-xl font-bold">SmartLine</h3>
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4">
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold">SmartLine</h3>
             <p className="text-sm">Smart. Simple. Streamlined.</p>
           </div>
           <div className="text-sm">
